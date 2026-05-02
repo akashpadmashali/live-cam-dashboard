@@ -15,8 +15,17 @@ const apiBaseUrlInput = document.getElementById("api-base-url");
 let currentRefreshMs = 500;
 const cameraCards = new Map();
 
+function getConfiguredBaseUrl() {
+  const configured = window.APP_CONFIG?.backendBaseUrl || "";
+  return configured.trim().replace(/\/$/, "");
+}
+
 function getApiBaseUrl() {
-  return (localStorage.getItem("edge_api_base_url") || "").trim().replace(/\/$/, "");
+  return (
+    localStorage.getItem("edge_api_base_url") ||
+    getConfiguredBaseUrl() ||
+    ""
+  ).trim().replace(/\/$/, "");
 }
 
 function setApiBaseUrl(value) {

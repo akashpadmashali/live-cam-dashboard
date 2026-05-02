@@ -5,3 +5,4 @@ config.json
 .run/
 .codex
 .agents
+dist/

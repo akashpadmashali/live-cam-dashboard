@@ -157,20 +157,24 @@ Yes, you can deploy the `frontend/` folder to Cloudflare Pages.
 Suggested Pages settings:
 
 - `Framework preset`: `None`
-- `Build command`: leave blank
-- `Build output directory`: `frontend`
+- `Build command`: `./scripts/build-pages.sh`
+- `Build output directory`: `dist`
 - `Production branch`: `main`
 
-After deployment:
+Optional Pages environment variable:
 
-1. Open the Pages site URL.
-2. Paste your backend tunnel URL into the `Backend Base URL` field.
-3. Save from the UI.
+- `BACKEND_BASE_URL`
 
-Example backend base URL:
+Example value:
 
 ```text
 https://highways-stages-interesting-univ.trycloudflare.com
 ```
 
-That value is stored in browser local storage, and the Pages-hosted frontend will call your tunneled backend for camera config, status, and MJPEG streams.
+After deployment:
+
+1. Open the Pages site URL.
+2. If `BACKEND_BASE_URL` was set in Cloudflare, the frontend will use it automatically.
+3. You can still override it manually in the `Backend Base URL` field and save from the UI.
+
+The Pages-hosted frontend will call your tunneled backend for camera config, status, and MJPEG streams. Manual changes are stored in browser local storage, while the build-time variable gives you a sane default on first load.
