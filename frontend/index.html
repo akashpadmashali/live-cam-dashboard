@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edge Camera Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <aside class="control-panel">
+        <div class="panel-header">
+          <p class="eyebrow">Edge Node</p>
+          <h1>Camera Control Plane</h1>
+          <p class="panel-copy">
+            Edit camera IPs here. The local backend keeps the actual camera
+            connections so remote viewers never talk to LAN IPs directly.
+          </p>
+        </div>
+
+        <form id="config-form" class="config-form">
+          <section>
+            <div class="section-heading">
+              <h2>Cameras</h2>
+              <button type="button" id="add-camera" class="secondary-button">
+                Add Camera
+              </button>
+            </div>
+            <div id="camera-list" class="camera-list"></div>
+          </section>
+
+          <section>
+            <div class="section-heading">
+              <h2>Performance</h2>
+            </div>
+            <label>
+              <span>Max Width</span>
+              <input type="number" id="max-width" min="160" max="1920" />
+            </label>
+            <label>
+              <span>Target FPS</span>
+              <input type="number" id="target-fps" min="1" max="30" step="0.5" />
+            </label>
+            <label>
+              <span>UI Refresh (ms)</span>
+              <input type="number" id="ui-refresh" min="100" max="5000" step="50" />
+            </label>
+            <label>
+              <span>JPEG Quality</span>
+              <input type="number" id="jpeg-quality" min="30" max="95" />
+            </label>
+          </section>
+
+          <div class="actions">
+            <button type="submit" class="primary-button">Save & Reload</button>
+            <p id="save-status" class="save-status"></p>
+          </div>
+        </form>
+      </aside>
+
+      <main class="dashboard">
+        <div class="dashboard-header">
+          <div>
+            <p class="eyebrow">Live View</p>
+            <h2>Aggregated Feeds</h2>
+          </div>
+          <p class="panel-copy">
+            These tiles render continuous MJPEG streams from the backend, while
+            status updates stay separate so the image itself does not flicker.
+          </p>
+        </div>
+        <div id="camera-grid" class="camera-grid"></div>
+      </main>
+    </div>
+
+    <template id="camera-form-template">
+      <article class="camera-editor">
+        <div class="camera-editor-header">
+          <strong class="camera-title">Camera</strong>
+          <button type="button" class="danger-button remove-camera">Remove</button>
+        </div>
+        <label>
+          <span>Name</span>
+          <input type="text" class="camera-name" required />
+        </label>
+        <label>
+          <span>URL</span>
+          <input type="text" class="camera-url" required />
+        </label>
+      </article>
+    </template>
+
+    <template id="camera-card-template">
+      <article class="camera-card">
+        <div class="camera-card-header">
+          <div>
+            <h3 class="card-name"></h3>
+            <p class="card-url"></p>
+          </div>
+          <span class="status-badge"></span>
+        </div>
+        <div class="frame-shell">
+          <img class="camera-frame" alt="" />
+          <div class="frame-fallback">Waiting for frames...</div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

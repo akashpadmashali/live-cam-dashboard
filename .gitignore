@@ -1,0 +1,7 @@
+.cloudflared-local/
+__pycache__/
+config.json
+.env
+.run/
+.codex
+.agents
