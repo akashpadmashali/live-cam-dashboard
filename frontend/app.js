@@ -10,9 +10,28 @@ const maxWidthInput = document.getElementById("max-width");
 const targetFpsInput = document.getElementById("target-fps");
 const uiRefreshInput = document.getElementById("ui-refresh");
 const jpegQualityInput = document.getElementById("jpeg-quality");
+const apiBaseUrlInput = document.getElementById("api-base-url");
 
 let currentRefreshMs = 500;
 const cameraCards = new Map();
+
+function getApiBaseUrl() {
+  return (localStorage.getItem("edge_api_base_url") || "").trim().replace(/\/$/, "");
+}
+
+function setApiBaseUrl(value) {
+  const normalized = value.trim().replace(/\/$/, "");
+  if (normalized) {
+    localStorage.setItem("edge_api_base_url", normalized);
+  } else {
+    localStorage.removeItem("edge_api_base_url");
+  }
+}
+
+function apiUrl(path) {
+  const base = getApiBaseUrl();
+  return base ? `${base}${path}` : path;
+}
 
 function createCameraForm(camera = { name: "", url: "" }) {
   const fragment = cameraFormTemplate.content.cloneNode(true);
@@ -63,9 +82,10 @@ function buildPayload() {
 }
 
 async function loadConfig() {
-  const response = await fetch("/api/config");
+  const response = await fetch(apiUrl("/api/config"));
   const config = await response.json();
 
+  apiBaseUrlInput.value = getApiBaseUrl();
   renderCameraForms(config.cameras);
   maxWidthInput.value = config.stream.max_width;
   targetFpsInput.value = config.stream.target_fps;
@@ -87,7 +107,7 @@ function createCameraCard(camera) {
   url.textContent = camera.url;
   frame.alt = camera.name;
 
-  frame.src = `/api/cameras/${camera.id}/stream.mjpg`;
+  frame.src = apiUrl(`/api/cameras/${camera.id}/stream.mjpg`);
   frame.onload = () => {
     frame.classList.add("ready");
     fallback.style.display = "none";
@@ -155,7 +175,7 @@ function syncCameraCards(cameras) {
 
 async function refreshStatuses() {
   try {
-    const response = await fetch("/api/cameras");
+    const response = await fetch(apiUrl("/api/cameras"));
     const cameras = await response.json();
     syncCameraCards(cameras);
   } catch (error) {
@@ -174,8 +194,9 @@ configForm.addEventListener("submit", async (event) => {
   saveStatus.textContent = "Saving...";
 
   try {
+    setApiBaseUrl(apiBaseUrlInput.value);
     const payload = buildPayload();
-    const response = await fetch("/api/config", {
+    const response = await fetch(apiUrl("/api/config"), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -201,6 +222,7 @@ configForm.addEventListener("submit", async (event) => {
 });
 
 async function bootstrap() {
+  apiBaseUrlInput.value = getApiBaseUrl();
   await loadConfig();
   await refreshStatuses();
 }

@@ -104,8 +104,9 @@ The scripts store PID files and logs in `.run/`.
 - `PUT /api/config`
 - `GET /api/cameras`
 - `GET /api/cameras/{camera_id}/frame.jpg`
+- `GET /api/cameras/{camera_id}/stream.mjpg`
 
-The frontend uses snapshot polling instead of embedding raw MJPEG feeds directly in the browser. That is lighter for remote viewing and works better through tunnels than the previous Streamlit approach.
+The frontend uses continuous MJPEG from the backend while keeping status polling separate. That avoids the visible flicker from swapping standalone JPEG snapshots every few hundred milliseconds.
 
 ## Cloudflare Quick Tunnel
 
@@ -146,5 +147,30 @@ That means your local machine still does the important origin work:
 - The UI can edit camera IPs directly.
 - The backend owns the LAN camera access.
 - The frontend is portable and can later live on Pages.
-- Snapshot polling is lighter than pushing full MJPEG through Streamlit.
+- Browser-side config can point the frontend at a tunneled backend URL.
 - Cloudflare Tunnel now exposes a more web-native backend instead of a continuously rerendering Streamlit session.
+
+## Cloudflare Pages Setup
+
+Yes, you can deploy the `frontend/` folder to Cloudflare Pages.
+
+Suggested Pages settings:
+
+- `Framework preset`: `None`
+- `Build command`: leave blank
+- `Build output directory`: `frontend`
+- `Production branch`: `main`
+
+After deployment:
+
+1. Open the Pages site URL.
+2. Paste your backend tunnel URL into the `Backend Base URL` field.
+3. Save from the UI.
+
+Example backend base URL:
+
+```text
+https://highways-stages-interesting-univ.trycloudflare.com
+```
+
+That value is stored in browser local storage, and the Pages-hosted frontend will call your tunneled backend for camera config, status, and MJPEG streams.

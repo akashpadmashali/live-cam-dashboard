@@ -21,6 +21,24 @@
         <form id="config-form" class="config-form">
           <section>
             <div class="section-heading">
+              <h2>Backend</h2>
+            </div>
+            <label>
+              <span>Backend Base URL</span>
+              <input
+                type="url"
+                id="api-base-url"
+                placeholder="https://your-tunnel-url.trycloudflare.com"
+              />
+            </label>
+            <p class="field-help">
+              Leave blank for local same-origin use. Set this when the frontend
+              is hosted separately, such as on Cloudflare Pages.
+            </p>
+          </section>
+
+          <section>
+            <div class="section-heading">
               <h2>Cameras</h2>
               <button type="button" id="add-camera" class="secondary-button">
                 Add Camera
